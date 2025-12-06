@@ -14,107 +14,96 @@ body {
     color: #fff;
     overflow: hidden;
     height: 100vh;
+    height: 100dvh; /* Mobile viewport fix */
     touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-/* --- SNOW ANIMATION --- */
+/* --- SNOW --- */
 .snow {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 1;
-    background-image: 
-        radial-gradient(4px 4px at 100px 50px, #fff, transparent), 
-        radial-gradient(6px 6px at 200px 150px, #fff, transparent), 
-        radial-gradient(3px 3px at 300px 250px, #fff, transparent);
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 1;
+    background-image: radial-gradient(3px 3px at 50px 50px, rgba(255,255,255,0.8), transparent), 
+                      radial-gradient(4px 4px at 150px 150px, rgba(255,255,255,0.6), transparent), 
+                      radial-gradient(2px 2px at 250px 250px, rgba(255,255,255,0.9), transparent);
     background-size: 200px 200px;
-    animation: snow 3s linear infinite;
-    opacity: 0.3;
+    animation: snow 4s linear infinite;
+    opacity: 0.5;
 }
-@keyframes snow {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(200px); }
-}
+@keyframes snow { from { transform: translateY(-200px); } to { transform: translateY(0); } }
 
-/* --- SLIDE LAYOUT --- */
+/* --- SLIDE --- */
 .slide {
     width: 100%; height: 100%;
     position: absolute; top: 0; left: 0;
     display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center;
-    padding: 20px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
+    align-items: center; 
+    /* Spacing: Header top, Content center, Buttons bottom */
+    justify-content: flex-start; 
+    padding: calc(var(--safe-area-top) + 20px) 20px calc(var(--safe-area-bottom) + 100px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
     z-index: 5;
 }
 .slide.active { opacity: 1; pointer-events: auto; z-index: 10; }
 
-/* --- COLORS (Solid/Gradient) --- */
-.bg-blue   { background: #3390ec; }
-.bg-green  { background: #34b744; }
-.bg-orange { background: #e68d37; }
-.bg-red    { background: #ef4949; }
-.bg-purple { background: #8e5af7; }
-.bg-gray   { background: #8e8e93; }
+/* Colors */
+.bg-blue   { background: linear-gradient(180deg, #3390ec 0%, #227ec9 100%); }
+.bg-green  { background: linear-gradient(180deg, #34b744 0%, #2aa03a 100%); }
+.bg-orange { background: linear-gradient(180deg, #e68d37 0%, #d57a2b 100%); }
+.bg-red    { background: linear-gradient(180deg, #ef4949 0%, #d43b3b 100%); }
+.bg-purple { background: linear-gradient(180deg, #8e5af7 0%, #7646d8 100%); }
+.bg-yellow { background: linear-gradient(180deg, #fecb2e 0%, #e6b41d 100%); }
 
-/* --- TYPOGRAPHY --- */
-h1 { font-size: 28px; font-weight: 800; margin: 0 0 10px 0; }
-h2 { font-size: 72px; font-weight: 900; margin: 10px 0; letter-spacing: -2px; line-height: 1; }
-.subtitle { font-size: 16px; opacity: 0.9; margin-bottom: 30px; font-weight: 500; }
-.unit { font-size: 20px; font-weight: 700; opacity: 0.9; display: block; margin-top: -10px;}
+/* Typography */
+.slide-title { font-size: 24px; font-weight: 700; opacity: 0.9; margin: 0; margin-top: 2vh; }
+.subtitle { font-size: 16px; opacity: 0.8; margin-top: 5px; font-weight: 500; }
 
-/* --- STICKERS --- */
-.sticker-img {
-    width: 180px; height: 180px;
-    margin-bottom: 20px;
-    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
-}
+h2 { font-size: 64px; font-weight: 900; margin: 10px 0; letter-spacing: -2px; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.unit { font-size: 18px; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
 
-/* --- BUTTONS (Bottom) --- */
-.buttons-container {
-    position: absolute;
-    bottom: calc(var(--safe-area-bottom) + 30px);
+/* Stickers (Responsive) */
+.sticker-container {
+    flex: 1; /* Take available space */
+    display: flex; align-items: center; justify-content: center;
     width: 100%;
-    padding: 0 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    max-height: 40vh; /* Don't be too big */
+    margin: 10px 0;
+}
+lottie-player { width: 220px; height: 220px; max-width: 80vw; max-height: 80vw; }
+
+/* Photo Badge */
+.photo-badge {
+    position: absolute; bottom: 140px; right: 30px;
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.5);
+    overflow: hidden;
+    display: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.photo-badge img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Buttons */
+.buttons-container {
+    position: absolute; bottom: calc(var(--safe-area-bottom) + 20px);
+    width: 100%; padding: 0 20px;
+    display: flex; flex-direction: column; gap: 10px;
     z-index: 20;
 }
-
 .btn {
-    width: 100%;
-    padding: 16px;
-    border-radius: 14px;
-    font-size: 17px;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.1s;
+    width: 100%; padding: 16px;
+    border-radius: 12px;
+    font-size: 17px; font-weight: 600;
+    border: none; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 .btn:active { transform: scale(0.98); }
-
 .btn-primary { background: #fff; color: #000; }
-.btn-secondary { background: rgba(255,255,255,0.2); color: #fff; backdrop-filter: blur(10px); }
+.btn-secondary { background: rgba(0,0,0,0.15); color: #fff; backdrop-filter: blur(5px); }
 
-/* --- NAVIGATION --- */
-/* We keep tap zones for convenience, but rely on buttons visually */
-.tap-zone {
-    position: absolute; top: 0;
-    height: 70%; /* Leave bottom for buttons */
-    width: 50%; z-index: 15;
-}
-.tap-left { left: 0; }
-.tap-right { right: 0; }
-
-/* --- LOADER --- */
-.loader-view {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: #000;
-    display: flex; justify-content: center; align-items: center;
-    z-index: 999;
-}
+/* Helpers */
+.tap-zone { position: absolute; top: 0; height: 60%; width: 50%; z-index: 15; }
+.tap-left { left: 0; } .tap-right { right: 0; }
+.loader-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; }

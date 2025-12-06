@@ -6,18 +6,20 @@
     <title>Year Review</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Lottie Player -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body>
 
     <!-- Loading -->
     <div id="loader-view" class="loader-view">
-        <div style="width: 40px; height: 40px; border: 4px solid #333; border-top-color: #fff; border-radius: 50%; animation: spin 1s infinite;"></div>
+        <lottie-player src="https://lottie.host/57bdd505-866d-4952-87d8-34863f695926/M2N3aK4wX2.json" background="transparent" speed="1" style="width: 150px; height: 150px;" loop autoplay></lottie-player>
+        <p style="opacity: 0.6; margin-top: -20px;">Analyzing history...</p>
     </div>
-    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 
     <div id="app" style="display: none;">
         
-        <!-- Navigation Zones (Hidden helper) -->
+        <!-- Navigation Zones -->
         <div class="tap-zone tap-left" onclick="prevSlide()"></div>
         <div class="tap-zone tap-right" onclick="nextSlide()"></div>
 
@@ -25,50 +27,63 @@
         <div class="slide bg-blue active">
             <div class="snow"></div>
             
-            <h1 style="margin-top: 40px;">Rising Star!</h1>
+            <h1 class="slide-title">Rising Star!</h1>
             <p class="subtitle">You joined Telegram</p>
             
-            <!-- Utya Hi -->
-            <img src="https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/1.webp" class="sticker-img animate-zoom">
+            <!-- Duck Waving -->
+            <div class="sticker-container">
+                <lottie-player src="https://lottie.host/80e07353-8b89-4b6d-a02e-c17290f65366/8s2W9Xl6Yp.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            </div>
             
             <h2 id="days-on-tg">0</h2>
             <span class="unit">days ago</span>
+            
+            <!-- Real User Photo Overlay -->
+            <div id="user-photo-container" class="photo-badge">
+                <img id="user-photo" src="">
+            </div>
         </div>
 
         <!-- SLIDE 2: TOTAL MESSAGES (Orange) -->
         <div class="slide bg-orange">
             <div class="snow"></div>
-            <h1 style="margin-top: 40px;">Chatterbox</h1>
+            <h1 class="slide-title">Chatterbox</h1>
             <p class="subtitle">Total messages sent</p>
 
-            <!-- Utya Typing/Popcorn -->
-            <img src="https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/11.webp" class="sticker-img animate-zoom">
+            <!-- Duck Typing/Phone -->
+            <div class="sticker-container">
+                <lottie-player src="https://lottie.host/02005085-0557-41e9-9231-158a18602b66/k9r5gK4W3I.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            </div>
 
             <h2 id="total-msgs">0</h2>
             <span class="unit">messages</span>
         </div>
 
-        <!-- SLIDE 3: VOICE (Gray/Silver) -->
-        <div class="slide bg-gray">
+        <!-- SLIDE 3: VOICE (Green) -->
+        <div class="slide bg-green">
             <div class="snow"></div>
-            <h1 style="margin-top: 40px;">Voice Master</h1>
+            <h1 class="slide-title">Voice Master</h1>
             <p class="subtitle">You prefer to be heard</p>
 
-            <!-- Utya Headphones/Mic -->
-            <img src="https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/19.webp" class="sticker-img animate-zoom">
+            <!-- Duck Music/Headphones -->
+            <div class="sticker-container">
+                <lottie-player src="https://lottie.host/64d7c603-6058-4545-9764-1647f48b9f95/8eR3gG5B6s.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            </div>
 
             <h2 id="stat-voice">0</h2>
             <span class="unit">voice messages</span>
         </div>
 
-        <!-- SLIDE 4: VIDEO NOTES (Blue/Cyan) -->
-        <div class="slide bg-blue">
+        <!-- SLIDE 4: VIDEO NOTES (Purple) -->
+        <div class="slide bg-purple">
             <div class="snow"></div>
-            <h1 style="margin-top: 40px;">Camera Lover</h1>
+            <h1 class="slide-title">Camera Lover</h1>
             <p class="subtitle">Video circles recorded</p>
 
-            <!-- Utya Cool -->
-            <img src="https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/7.webp" class="sticker-img animate-zoom">
+            <!-- Duck Cool -->
+            <div class="sticker-container">
+                <lottie-player src="https://lottie.host/d1c3a6e9-0268-452f-a038-1637c3569865/H4a8b7X9z2.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            </div>
 
             <h2 id="stat-video">0</h2>
             <span class="unit">circles</span>
@@ -77,24 +92,28 @@
         <!-- SLIDE 5: GHOST MODE (Red) -->
         <div class="slide bg-red">
             <div class="snow"></div>
-            <h1 style="margin-top: 40px;">Ghost Mode</h1>
-            <p class="subtitle">Opened app but didn't write</p>
+            <h1 class="slide-title">Ghost Mode</h1>
+            <p class="subtitle">Opened app but silent</p>
 
-            <!-- Utya Scared/Hidden -->
-            <img src="https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/23.webp" class="sticker-img animate-zoom">
+            <!-- Duck Hidden/Scared -->
+            <div class="sticker-container">
+                <lottie-player src="https://lottie.host/c57c4c7c-4034-4537-8f56-029487961928/9J2a8X5Z3p.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            </div>
 
             <h2 id="ghost-count">0</h2>
             <span class="unit">times</span>
         </div>
 
-        <!-- SLIDE 6: STREAK (Purple) -->
-        <div class="slide bg-purple">
+        <!-- SLIDE 6: STREAK (Yellow/Gold) -->
+        <div class="slide bg-yellow">
             <div class="snow"></div>
-            <h1 style="margin-top: 40px;">Addicted?</h1>
+            <h1 class="slide-title">Addicted?</h1>
             <p class="subtitle">Longest daily streak</p>
 
-            <!-- Utya Fire/Love -->
-            <img src="https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/10.webp" class="sticker-img animate-zoom">
+            <!-- Duck Fire -->
+            <div class="sticker-container">
+                <lottie-player src="https://lottie.host/f8b3c6a4-4927-4402-a7d1-056580665555/4K3a9Z7X2p.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            </div>
 
             <h2 id="days-streak">0</h2>
             <span class="unit">days in a row</span>

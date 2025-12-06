@@ -11,7 +11,6 @@ const API_URL = '/api';
 /* --- STATE --- */
 let currentSlide = 0;
 const slides = document.querySelectorAll('.slide');
-const totalSlides = slides.length; // Will be updated on init
 
 /* --- INIT --- */
 async function init() {
@@ -27,7 +26,6 @@ async function init() {
         document.getElementById('loader-view').style.display = 'none';
         document.getElementById('app').style.display = 'block';
         
-        // Re-select slides as they are now visible
         updateSlideState();
 
     } catch (e) {
@@ -44,9 +42,8 @@ function updateSlideState() {
     });
 }
 
-/* --- DATA POPULATION --- */
 function populateData(stats) {
-    // Numbers animation helper
+    // Numbers animation
     const animateValue = (id, start, end, duration) => {
         const obj = document.getElementById(id);
         if (!obj) return;
@@ -62,27 +59,20 @@ function populateData(stats) {
         window.requestAnimationFrame(step);
     };
 
-    // 1. Days on TG
-    animateValue("days-on-tg", 0, stats.daysOnTg || 365, 2000);
+    animateValue("days-on-tg", 0, stats.daysOnTg || 365, 1500);
+    animateValue("total-msgs", 0, stats.totalMessages || 1000, 1500);
+    animateValue("stat-voice", 0, stats.voices || 0, 1500);
+    animateValue("stat-video", 0, stats.videoNotes || 0, 1500);
+    animateValue("ghost-count", 0, stats.ghostModeCount || 50, 1500);
+    animateValue("days-streak", 0, stats.daysStreak || 10, 1500);
 
-    // 2. Total Messages
-    animateValue("total-msgs", 0, stats.totalMessages || 1000, 2000);
-
-    // 3. Voice
-    const type = stats.contentType || {};
-    animateValue("stat-voice", 0, type.voice || 0, 2000);
-
-    // 4. Video Notes (Circles)
-    animateValue("stat-video", 0, stats.videoNotes || type.video_note || 0, 2000);
-
-    // 5. Ghost Mode
-    animateValue("ghost-count", 0, stats.ghostModeCount || 50, 2000);
-
-    // 6. Streak
-    animateValue("days-streak", 0, stats.daysStreak || 10, 2000);
+    // Photo
+    if (stats.photoUrl) {
+        document.getElementById('user-photo').src = stats.photoUrl;
+        document.getElementById('user-photo-container').style.display = 'block';
+    }
 }
 
-/* --- NAVIGATION --- */
 window.nextSlide = function() {
     const allSlides = document.querySelectorAll('.slide');
     if (currentSlide < allSlides.length - 1) {
@@ -100,5 +90,4 @@ window.prevSlide = function() {
     }
 };
 
-// Start
 init();
