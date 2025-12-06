@@ -1,109 +1,158 @@
 :root {
-    --bg-color: var(--tg-theme-bg-color, #1c1c1e);
-    --text-color: var(--tg-theme-text-color, #ffffff);
-    --button-color: var(--tg-theme-button-color, #3390ec);
-    --button-text: var(--tg-theme-button-text-color, #ffffff);
-    --secondary-bg: var(--tg-theme-secondary-bg-color, #2c2c2e);
-    --card-radius: 16px;
+    --safe-area-top: env(safe-area-inset-top, 20px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 20px);
 }
+
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
-    padding: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: all 0.3s ease;
+    padding: 0;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background: #000;
+    color: #fff;
+    overflow: hidden; /* No scroll for stories */
+    height: 100vh;
+    touch-action: manipulation;
 }
 
-/* Auth View */
-.auth-container {
+/* --- STORY CONTAINER --- */
+#story-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: none; /* Hidden until loaded */
+}
+
+/* --- PROGRESS BAR --- */
+.progress-container {
+    position: absolute;
+    top: calc(var(--safe-area-top) + 10px);
+    left: 0;
+    width: 100%;
+    padding: 0 10px;
+    display: flex;
+    gap: 4px;
+    z-index: 100;
+}
+
+.progress-segment {
+    flex: 1;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #fff;
+    width: 0%;
+    transition: width 0s linear;
+}
+
+.progress-fill.active {
+    width: 100%;
+    transition: width 5s linear; /* Default slide duration */
+}
+
+.progress-fill.completed {
+    width: 100%;
+}
+
+/* --- SLIDES --- */
+.slide {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 90vh;
     text-align: center;
-}
-
-input {
-    background: var(--secondary-bg);
-    border: none;
-    padding: 15px;
-    border-radius: 12px;
-    color: var(--text-color);
-    width: 80%;
-    margin-bottom: 10px;
-    font-size: 16px;
-    outline: none;
-}
-
-button {
-    background: var(--button-color);
-    color: var(--button-text);
-    border: none;
-    padding: 15px 30px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    width: 90%;
-}
-
-/* Bento Grid Dashboard */
-.dashboard {
-    display: none; /* Hidden by default */
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: auto auto auto;
-    gap: 15px;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.bento-card {
-    background: var(--secondary-bg);
-    border-radius: var(--card-radius);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    padding: 40px;
     opacity: 0;
-    transform: scale(0.9);
+    pointer-events: none;
+    transition: opacity 0.4s ease;
 }
 
-/* Grid Spans */
-.card-large { grid-column: span 2; }
-.card-tall { grid-row: span 2; }
-
-/* Content Styles */
-.stat-value { font-size: 32px; font-weight: 800; margin: 10px 0; }
-.stat-label { font-size: 14px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px;}
-.gradient-text {
-    background: linear-gradient(45deg, #ff00cc, #333399);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 10;
 }
 
-/* Animations */
-@keyframes popIn {
-    to { opacity: 1; transform: scale(1); }
+/* --- SLIDE THEMES (Gradients) --- */
+.bg-purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.bg-orange { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.bg-blue   { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.bg-green  { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+.bg-dark   { background: linear-gradient(135deg, #09203f 0%, #537895 100%); }
+
+/* --- ANIMATIONS --- */
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
-.bento-card:nth-child(1) { animation-delay: 0.1s; }
-.bento-card:nth-child(2) { animation-delay: 0.2s; }
-.bento-card:nth-child(3) { animation-delay: 0.3s; }
-.bento-card:nth-child(4) { animation-delay: 0.4s; }
+@keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
 
-.loader {
-    border: 4px solid var(--secondary-bg);
-    border-top: 4px solid var(--button-color);
+.animate-up { animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.animate-zoom { animation: zoomIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+.delay-1 { animation-delay: 0.1s; opacity: 0; }
+.delay-2 { animation-delay: 0.3s; opacity: 0; }
+.delay-3 { animation-delay: 0.5s; opacity: 0; }
+
+/* --- TYPOGRAPHY --- */
+h1 { font-size: 32px; font-weight: 800; margin-bottom: 10px; line-height: 1.1; }
+h2 { font-size: 60px; font-weight: 900; margin: 20px 0; letter-spacing: -1px; }
+.subtitle { font-size: 18px; opacity: 0.8; margin-bottom: 30px; }
+.emoji-icon { font-size: 80px; margin-bottom: 20px; display: block; }
+.stat-box {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 20px;
+    width: 100%;
+    margin: 10px 0;
+}
+.stat-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px;}
+
+/* --- NAVIGATION ZONES --- */
+.tap-zone {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 30%;
+    z-index: 50;
+}
+.tap-left { left: 0; }
+.tap-right { right: 0; width: 70%; } /* Right side is larger for easier 'next' */
+
+/* --- LOADER --- */
+.loader-view {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 999;
+}
+.spinner {
+    width: 40px; height: 40px;
+    border: 4px solid rgba(255,255,255,0.1);
+    border-left-color: #fff;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
     animation: spin 1s linear infinite;
-    margin: 20px auto;
+    margin-bottom: 20px;
 }
-
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
+@keyframes spin { to { transform: rotate(360deg); } }

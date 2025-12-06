@@ -2,89 +2,135 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 tg.ready();
 
+// Force dark theme colors
+tg.setHeaderColor('#000000');
+tg.setBackgroundColor('#000000');
+
 const API_URL = '/api';
 
-const getHeaders = () => ({
-    'Content-Type': 'application/json',
-    'X-Telegram-Init-Data': tg.initData
-});
+/* --- STATE --- */
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let autoAdvanceTimer = null;
+const SLIDE_DURATION = 5000; // 5 seconds per slide
 
-const views = {
-    loader: document.getElementById('loader-view'),
-    dashboard: document.getElementById('dashboard-view')
-};
-
-const showView = (name) => {
-    Object.values(views).forEach(el => el.style.display = 'none');
-    if (name === 'dashboard') {
-        views[name].style.display = 'grid';
-    } else {
-        views[name].style.display = 'flex';
-    }
-};
-
-// Automatic Seamless Init
+/* --- INIT --- */
 async function init() {
-    if (!tg.initData) {
-        console.warn('No initData available.');
-    }
-
-    // Immediately load stats. Auth is handled via headers automatically.
-    loadStats();
-}
-
-async function loadStats() {
-    showView('loader');
-    const loaderText = document.getElementById('loader-text');
-    if(loaderText) loaderText.innerText = "Analyzing your profile...";
-
+    // 1. Setup UI
+    createProgressBars();
+    
+    // 2. Fetch Data
     try {
-        const res = await fetch(`${API_URL}/stats`, { headers: getHeaders() });
-        
-        if (res.status === 401) {
-             tg.showAlert("Session expired or invalid.");
-             return;
-        }
-        
-        const stats = await res.json();
-        
-        if (stats.error) {
-             // If "No Session" error comes from backend, we show zeros or mock data
-             console.warn(stats.error);
-        }
+        const headers = { 'Content-Type': 'application/json' };
+        if (tg.initData) headers['X-Telegram-Init-Data'] = tg.initData;
 
-        renderDashboard(stats);
-        showView('dashboard');
+        const res = await fetch(`${API_URL}/stats`, { headers });
+        const data = await res.json();
+        
+        // 3. Populate Data
+        populateData(data);
+        
+        // 4. Start Show
+        document.getElementById('loader-view').style.display = 'none';
+        document.getElementById('story-container').style.display = 'block';
+        startSlide(0);
+
     } catch (e) {
         console.error(e);
-        tg.showAlert('Failed to connect to server');
+        tg.showAlert("Failed to load data. Please try again.");
     }
 }
 
-function renderDashboard(stats) {
-    // Fill with data or zeros if empty
+/* --- DATA POPULATION --- */
+function populateData(stats) {
+    // Name
+    const user = tg.initDataUnsafe?.user;
+    if (user?.first_name) document.getElementById('user-name').textContent = user.first_name;
+
+    // Slide 2: Numbers
     document.getElementById('total-msgs').textContent = (stats.totalMessages || 0).toLocaleString();
     document.getElementById('words-count').textContent = (stats.wordsCount || 0).toLocaleString();
-    
-    // Top Contact
-    if (stats.topContacts && stats.topContacts.length > 0) {
-        const top = stats.topContacts[0];
-        document.getElementById('top-contact').textContent = top.name;
-        document.getElementById('top-contact-count').textContent = `${top.count} messages`;
-    } else {
-        document.getElementById('top-contact').textContent = "No data available";
-        document.getElementById('top-contact-count').textContent = "Need MTProto Session";
-    }
 
-    // Peak Hour Logic
-    const hours = stats.activeHours || {};
-    let peak = "--";
-    if (Object.keys(hours).length > 0) {
-        peak = Object.keys(hours).reduce((a, b) => hours[a] > hours[b] ? a : b, 12);
-        peak = `${peak}:00`;
+    // Slide 3: Content
+    const type = stats.contentType || {};
+    document.getElementById('stat-text').textContent = (type.text || 0).toLocaleString();
+    document.getElementById('stat-photo').textContent = (type.photo || 0).toLocaleString();
+    document.getElementById('stat-voice').textContent = (type.voice || 0).toLocaleString();
+    document.getElementById('stat-sticker').textContent = (type.sticker || 0).toLocaleString();
+    document.getElementById('persona-type').textContent = stats.persona || "User";
+
+    // Slide 4: Top Contact
+    if (stats.topContacts && stats.topContacts.length > 0) {
+        document.getElementById('top-contact-name').textContent = stats.topContacts[0].name;
+        document.getElementById('top-contact-count').textContent = stats.topContacts[0].count + " messages";
     }
-    document.getElementById('peak-hour').textContent = peak;
 }
 
-// Start immediately
+/* --- STORY LOGIC --- */
+function createProgressBars() {
+    const container = document.getElementById('progress-container');
+    container.innerHTML = '';
+    for (let i = 0; i < totalSlides; i++) {
+        const seg = document.createElement('div');
+        seg.className = 'progress-segment';
+        seg.innerHTML = `<div class="progress-fill" id="prog-${i}"></div>`;
+        container.appendChild(seg);
+    }
+}
+
+function startSlide(index) {
+    if (index < 0 || index >= totalSlides) return;
+    
+    // Reset previous slides
+    slides.forEach((s, i) => {
+        s.classList.remove('active');
+        // Reset animations
+        s.querySelectorAll('.animate-up, .animate-zoom').forEach(el => {
+            el.style.animation = 'none';
+            el.offsetHeight; /* trigger reflow */
+            el.style.animation = ''; 
+        });
+    });
+
+    // Reset progress bars
+    for(let i=0; i<totalSlides; i++) {
+        const bar = document.getElementById(`prog-${i}`);
+        bar.className = 'progress-fill'; // reset
+        if (i < index) bar.classList.add('completed');
+    }
+
+    // Activate current
+    currentSlide = index;
+    slides[index].classList.add('active');
+    
+    // Animate active progress
+    setTimeout(() => {
+        document.getElementById(`prog-${index}`).classList.add('active');
+    }, 10);
+
+    // Timer
+    clearTimeout(autoAdvanceTimer);
+    if (index < totalSlides - 1) { // Don't auto-close last slide
+        autoAdvanceTimer = setTimeout(() => nextSlide(), SLIDE_DURATION);
+    }
+}
+
+window.nextSlide = function() {
+    if (currentSlide < totalSlides - 1) {
+        document.getElementById(`prog-${currentSlide}`).classList.add('completed'); // Force complete current bar
+        startSlide(currentSlide + 1);
+    } else {
+        // Close app on last slide tap? Or just stay.
+        // Telegram.WebApp.close(); 
+    }
+};
+
+window.prevSlide = function() {
+    if (currentSlide > 0) {
+        startSlide(currentSlide - 1);
+    }
+};
+
+// Start
 init();
