@@ -48,6 +48,13 @@ function populateData(stats) {
     const user = tg.initDataUnsafe?.user;
     if (user?.first_name) document.getElementById('user-name').textContent = user.first_name;
 
+    // Photo
+    if (stats.photoUrl) {
+        document.getElementById('user-photo').src = stats.photoUrl;
+        document.getElementById('user-photo-container').style.display = 'block';
+        document.getElementById('default-emoji').style.display = 'none';
+    }
+
     // Slide 2: Numbers
     document.getElementById('total-msgs').textContent = (stats.totalMessages || 0).toLocaleString();
     document.getElementById('words-count').textContent = (stats.wordsCount || 0).toLocaleString();
@@ -109,11 +116,11 @@ function startSlide(index) {
         document.getElementById(`prog-${index}`).classList.add('active');
     }, 10);
 
-    // Timer
+    // Timer REMOVED per user request
     clearTimeout(autoAdvanceTimer);
-    if (index < totalSlides - 1) { // Don't auto-close last slide
-        autoAdvanceTimer = setTimeout(() => nextSlide(), SLIDE_DURATION);
-    }
+    // if (index < totalSlides - 1) { 
+    //     autoAdvanceTimer = setTimeout(() => nextSlide(), SLIDE_DURATION);
+    // }
 }
 
 window.nextSlide = function() {
