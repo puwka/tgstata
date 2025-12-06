@@ -8,6 +8,8 @@ const { Api } = require('telegram/tl');
 const supabase = require('./db');
 const { verifyTelegramWebAppData } = require('./utils');
 
+const path = require('path');
+
 const app = express();
 app.use(cors());
 
@@ -21,7 +23,15 @@ app.use((req, res, next) => {
 });
 
 app.use(bodyParser.json());
-app.use(express.static('public'));
+
+// FIX: Correct path for Vercel environment
+const publicPath = path.join(__dirname, '../public');
+app.use(express.static(publicPath));
+
+// FIX: Explicitly serve index.html for root route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(publicPath, 'index.html'));
+});
 
 // --- CONFIG ---
 const apiId = parseInt(process.env.TG_API_ID);

@@ -2,15 +2,13 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 tg.ready();
 
-const API_URL = '/api'; // Relative path since frontend & backend are on same port
+const API_URL = '/api';
 
-// Utility: Headers with InitData
 const getHeaders = () => ({
     'Content-Type': 'application/json',
     'X-Telegram-Init-Data': tg.initData
 });
 
-// State Management
 const views = {
     loader: document.getElementById('loader-view'),
     auth: document.getElementById('auth-view'),
@@ -26,20 +24,31 @@ const showView = (name) => {
     }
 };
 
-// 1. App Init
+// 1. App Init - Автоматическая проверка
 async function init() {
+    // Если запускаем не в Telegram, показываем заглушку или ошибку
+    if (!tg.initData) {
+        console.warn('No initData available. Are you running in Telegram?');
+        // Для тестов можно оставить, но в проде лучше показать ошибку
+    }
+
     try {
         const res = await fetch(`${API_URL}/status`, { headers: getHeaders() });
+        
+        if (!res.ok) throw new Error('Network response was not ok');
+        
         const data = await res.json();
         
         if (data.authenticated) {
+            // УЖЕ АВТОРИЗОВАН: Сразу грузим статистику, пропускаем экран входа
             loadStats();
         } else {
+            // НЕ АВТОРИЗОВАН: Показываем форму входа
             showView('auth');
         }
     } catch (e) {
-        tg.showAlert('Error connecting to server');
-        // Show auth as fallback if server check fails, might be network issue or first load
+        console.error(e);
+        tg.showAlert('Connection error. Please try again.');
         showView('auth'); 
     }
 }
@@ -92,7 +101,7 @@ window.signIn = async function() {
             loadStats();
         } else {
             tg.showAlert(data.error || 'Auth failed');
-            window.location.reload();
+            window.location.reload(); // Сброс интерфейса
         }
     } catch (e) {
         tg.showAlert('Network Error');
@@ -118,7 +127,9 @@ async function loadStats() {
         renderDashboard(stats);
         showView('dashboard');
     } catch (e) {
+        console.error(e);
         tg.showAlert('Failed to load stats');
+        showView('auth'); // Fallback если что-то пошло не так
     }
 }
 
@@ -147,4 +158,3 @@ function renderDashboard(stats) {
 
 // Start
 init();
-
