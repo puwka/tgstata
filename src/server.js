@@ -2,13 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 const { TelegramClient } = require('telegram');
 const { StringSession } = require('telegram/sessions');
 const { Api } = require('telegram/tl');
 const supabase = require('./db');
 const { verifyTelegramWebAppData } = require('./utils');
-
-const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -28,24 +27,23 @@ app.use(bodyParser.json());
 const publicPath = path.join(__dirname, '../public');
 app.use(express.static(publicPath));
 
-// FIX: Explicitly serve index.html for root route
-app.get('/', (req, res) => {
-    res.sendFile(path.join(publicPath, 'index.html'));
-});
-
 // --- CONFIG ---
 const apiId = parseInt(process.env.TG_API_ID);
 const apiHash = process.env.TG_API_HASH;
 const botToken = process.env.BOT_TOKEN;
 
-// Middleware for validation
+// Middleware for validation (Seamless Auth)
 const authMiddleware = async (req, res, next) => {
     const initData = req.headers['x-telegram-init-data'];
-    // Allow bypassing auth for dev/testing if needed, but strictly enforce in prod
+    
+    // Strict verification of Telegram signature
     if (!initData || !verifyTelegramWebAppData(initData, botToken)) {
-        console.log('Auth failed for initData:', initData);
-        return res.status(403).json({ error: 'Invalid authentication' });
+        // For development outside TG, you might want to relax this, 
+        // but for security it must be strict.
+        console.log('Auth failed for initData');
+        return res.status(403).json({ error: 'Invalid authentication signature' });
     }
+    
     const searchParams = new URLSearchParams(initData);
     const userStr = searchParams.get('user');
     if (!userStr) {
@@ -57,129 +55,10 @@ const authMiddleware = async (req, res, next) => {
 
 // --- ROUTES ---
 
-// 1. Check status
-app.get('/api/status', authMiddleware, async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('users')
-            .select('session_string')
-            .eq('telegram_id', req.user.id)
-            .single();
-
-        if (error && error.code !== 'PGRST116') { // PGRST116 is "Row not found"
-            console.error('Supabase error:', error);
-        }
-
-        if (data && data.session_string) {
-            return res.json({ authenticated: true });
-        }
-        return res.json({ authenticated: false });
-    } catch (e) {
-        console.error(e);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-// 2. Start login: Send code
-app.post('/api/auth/send-code', authMiddleware, async (req, res) => {
-    const { phoneNumber } = req.body;
-    
-    if (!apiId || !apiHash) {
-        return res.status(500).json({ error: 'Server misconfigured (API_ID/HASH missing)' });
-    }
-
-    const client = new TelegramClient(new StringSession(''), apiId, apiHash, {
-        connectionRetries: 5,
-        useWSS: false 
-    });
-    
-    try {
-        await client.connect();
-        
-        const { phoneCodeHash } = await client.sendCode(
-            { apiId, apiHash },
-            phoneNumber
-        );
-        
-        // SERVERLESS CHANGE: Store hash in DB, not memory
-        await supabase.from('auth_temp').upsert({
-            telegram_id: req.user.id,
-            phone_hash: phoneCodeHash,
-            phone_number: phoneNumber
-        });
-        
-        res.json({ success: true, message: 'Code sent' });
-    } catch (e) {
-        console.error('Send code error:', e);
-        res.status(400).json({ error: e.message || 'Failed to send code' });
-    }
-});
-
-// 3. Complete login: Sign in
-app.post('/api/auth/sign-in', authMiddleware, async (req, res) => {
-    const { code, password } = req.body;
-    
-    // SERVERLESS CHANGE: Retrieve hash from DB
-    const { data: cache } = await supabase
-        .from('auth_temp')
-        .select('*')
-        .eq('telegram_id', req.user.id)
-        .single();
-
-    if (!cache) return res.status(400).json({ error: 'Session expired, try again' });
-
-    const { phone_hash: phoneCodeHash, phone_number: phoneNumber } = cache;
-
-    const client = new TelegramClient(new StringSession(''), apiId, apiHash, {
-        connectionRetries: 5,
-        useWSS: false
-    });
-
-    try {
-        await client.connect(); // Need to reconnect in new instance
-
-        await client.invoke(
-            new Api.auth.SignIn({
-                phoneNumber,
-                phoneCodeHash,
-                phoneCode: code,
-            })
-        );
-    } catch (e) {
-        if (e.message.includes('SESSION_PASSWORD_NEEDED')) {
-            try {
-                await client.signIn({ password, phoneNumber, phoneCode: code, phoneCodeHash });
-            } catch (innerE) {
-                console.error('2FA error:', innerE);
-                return res.status(400).json({ error: innerE.message });
-            }
-        } else {
-            console.error('Sign in error:', e);
-            return res.status(400).json({ error: e.message });
-        }
-    }
-
-    const sessionString = client.session.save();
-    
-    // Save session to DB
-    const { error } = await supabase.from('users').upsert({
-        telegram_id: req.user.id,
-        session_string: sessionString
-    });
-
-    if (error) console.error('DB Save error:', error);
-
-    // Cleanup
-    await supabase.from('auth_temp').delete().eq('telegram_id', req.user.id);
-    await client.disconnect();
-    
-    res.json({ success: true });
-});
-
-// 4. Get Stats
+// 1. Get Stats (Seamless)
 app.get('/api/stats', authMiddleware, async (req, res) => {
     try {
-        // Check cache
+        // A. Check cache first
         const { data: cached } = await supabase
             .from('user_stats')
             .select('stats_json')
@@ -188,25 +67,32 @@ app.get('/api/stats', authMiddleware, async (req, res) => {
 
         if (cached) return res.json(cached.stats_json);
 
-        // Get session
+        // B. Try to get active session
         const { data: userData } = await supabase
             .from('users')
             .select('session_string')
             .eq('telegram_id', req.user.id)
             .single();
 
-        if (!userData) return res.status(401).json({ error: 'Not authorized' });
+        // C. If NO session (which happens for new users now that we removed login),
+        // we cannot physically read messages. We return a "Lite" or "Empty" response.
+        if (!userData || !userData.session_string) {
+            return res.json({
+                totalMessages: 0,
+                wordsCount: 0,
+                topContacts: [{ name: "Demo User", count: 0 }],
+                activeHours: {},
+                warning: "No MTProto session available. Only bot-accessible data can be shown."
+            });
+        }
 
+        // D. If session exists (from old login or other source), calculate stats
         const client = new TelegramClient(
             new StringSession(userData.session_string), apiId, apiHash, { connectionRetries: 5, useWSS: false }
         );
         
-        // Vercel Timeout Warning: This connects to Telegram, which takes time.
-        // If analysis takes > 10s (default Vercel timeout), this will crash.
-        // We limit messages heavily here.
         await client.connect();
 
-        // --- ANALYTICS ---
         const stats = {
             totalMessages: 0,
             topContacts: [],
@@ -219,7 +105,7 @@ app.get('/api/stats', authMiddleware, async (req, res) => {
         for (const dialog of dialogs) {
             if (!dialog.isUser) continue; 
 
-            const msgs = await client.getMessages(dialog.entity, { limit: 50 }); // Reduced limit for Vercel safety
+            const msgs = await client.getMessages(dialog.entity, { limit: 50 }); 
             
             let chatCount = 0;
             const oneYearAgo = Date.now() / 1000 - 31536000;
@@ -257,8 +143,19 @@ app.get('/api/stats', authMiddleware, async (req, res) => {
         res.json(stats);
     } catch (e) {
         console.error('Stats error:', e);
-        res.status(500).json({ error: 'Failed to calculate stats' });
+        // Fallback instead of crash
+        res.json({
+             totalMessages: 0,
+             wordsCount: 0,
+             topContacts: [],
+             error: "Analysis failed or timed out"
+        });
     }
+});
+
+// Explicitly serve index.html for root route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 // Vercel Export Handler
