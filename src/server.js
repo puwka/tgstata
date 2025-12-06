@@ -10,6 +10,16 @@ const { verifyTelegramWebAppData } = require('./utils');
 
 const app = express();
 app.use(cors());
+
+// Fix Content Security Policy
+app.use((req, res, next) => {
+    res.setHeader(
+        'Content-Security-Policy',
+        "default-src 'self' https://telegram.org; script-src 'self' 'unsafe-inline' https://telegram.org; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https:;"
+    );
+    next();
+});
+
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
