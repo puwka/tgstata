@@ -6,123 +6,134 @@
     <title>Year Review</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Lottie Player -->
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body>
 
-    <!-- Loading -->
     <div id="loader-view" class="loader-view">
-        <lottie-player src="https://lottie.host/57bdd505-866d-4952-87d8-34863f695926/M2N3aK4wX2.json" background="transparent" speed="1" style="width: 150px; height: 150px;" loop autoplay></lottie-player>
-        <p style="opacity: 0.6; margin-top: -20px;">Analyzing history...</p>
+        <lottie-player src="https://lottie.host/57bdd505-866d-4952-87d8-34863f695926/M2N3aK4wX2.json" background="transparent" speed="1" style="width: 120px; height: 120px;" loop autoplay></lottie-player>
     </div>
 
     <div id="app" style="display: none;">
         
-        <!-- Navigation Zones -->
-        <div class="tap-zone tap-left" onclick="prevSlide()"></div>
-        <div class="tap-zone tap-right" onclick="nextSlide()"></div>
+        <!-- Navigation Helpers -->
+        <div class="tap-zone tap-left" onclick="prevSlide()" style="position:absolute; top:0; left:0; width:50%; height:70%; z-index:15;"></div>
+        <div class="tap-zone tap-right" onclick="nextSlide()" style="position:absolute; top:0; right:0; width:50%; height:70%; z-index:15;"></div>
 
-        <!-- SLIDE 1: JOIN DATE (Blue) -->
+        <!-- SLIDE 1: JOIN DATE -->
         <div class="slide bg-blue active">
             <div class="snow"></div>
             
-            <h1 class="slide-title">Rising Star!</h1>
-            <p class="subtitle">You joined Telegram</p>
-            
-            <!-- Duck Waving -->
-            <div class="sticker-container">
-                <lottie-player src="https://lottie.host/80e07353-8b89-4b6d-a02e-c17290f65366/8s2W9Xl6Yp.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            <div class="header-zone">
+                <h1 class="slide-title" data-key="title_1">Rising Star!</h1>
+                <p class="subtitle" data-key="sub_1">You joined Telegram</p>
             </div>
             
-            <h2 id="days-on-tg">0</h2>
-            <span class="unit">days ago</span>
-            
-            <!-- Real User Photo Overlay -->
-            <div id="user-photo-container" class="photo-badge">
-                <img id="user-photo" src="">
+            <div class="content-zone">
+                <lottie-player src="https://lottie.host/80e07353-8b89-4b6d-a02e-c17290f65366/8s2W9Xl6Yp.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                <div style="height: 20px;"></div>
+                <h2 id="days-on-tg">0</h2>
+                <span class="unit" data-key="unit_days">days ago</span>
+            </div>
+
+            <div class="footer-zone">
+                <button class="btn btn-primary" onclick="nextSlide()" data-key="btn_next">Continue</button>
             </div>
         </div>
 
-        <!-- SLIDE 2: TOTAL MESSAGES (Orange) -->
+        <!-- SLIDE 2: TOTAL MESSAGES -->
         <div class="slide bg-orange">
             <div class="snow"></div>
-            <h1 class="slide-title">Chatterbox</h1>
-            <p class="subtitle">Total messages sent</p>
-
-            <!-- Duck Typing/Phone -->
-            <div class="sticker-container">
-                <lottie-player src="https://lottie.host/02005085-0557-41e9-9231-158a18602b66/k9r5gK4W3I.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            <div class="header-zone">
+                <h1 class="slide-title" data-key="title_2">Chatterbox</h1>
+                <p class="subtitle" data-key="sub_2">Total messages sent</p>
             </div>
-
-            <h2 id="total-msgs">0</h2>
-            <span class="unit">messages</span>
+            <div class="content-zone">
+                <lottie-player src="https://lottie.host/02005085-0557-41e9-9231-158a18602b66/k9r5gK4W3I.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                <div style="height: 20px;"></div>
+                <h2 id="total-msgs">0</h2>
+                <span class="unit" data-key="unit_msgs">messages</span>
+            </div>
+            <div class="footer-zone">
+                <button class="btn btn-primary" onclick="nextSlide()" data-key="btn_next">Continue</button>
+                <button class="btn btn-secondary" onclick="prevSlide()" data-key="btn_back">Back</button>
+            </div>
         </div>
 
-        <!-- SLIDE 3: VOICE (Green) -->
+        <!-- SLIDE 3: VOICE -->
         <div class="slide bg-green">
             <div class="snow"></div>
-            <h1 class="slide-title">Voice Master</h1>
-            <p class="subtitle">You prefer to be heard</p>
-
-            <!-- Duck Music/Headphones -->
-            <div class="sticker-container">
-                <lottie-player src="https://lottie.host/64d7c603-6058-4545-9764-1647f48b9f95/8eR3gG5B6s.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            <div class="header-zone">
+                <h1 class="slide-title" data-key="title_3">Voice Master</h1>
+                <p class="subtitle" data-key="sub_3">You prefer to be heard</p>
             </div>
-
-            <h2 id="stat-voice">0</h2>
-            <span class="unit">voice messages</span>
+            <div class="content-zone">
+                <lottie-player src="https://lottie.host/64d7c603-6058-4545-9764-1647f48b9f95/8eR3gG5B6s.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                <div style="height: 20px;"></div>
+                <h2 id="stat-voice">0</h2>
+                <span class="unit" data-key="unit_voice">voice messages</span>
+            </div>
+            <div class="footer-zone">
+                <button class="btn btn-primary" onclick="nextSlide()" data-key="btn_next">Continue</button>
+                <button class="btn btn-secondary" onclick="prevSlide()" data-key="btn_back">Back</button>
+            </div>
         </div>
 
-        <!-- SLIDE 4: VIDEO NOTES (Purple) -->
+        <!-- SLIDE 4: VIDEO -->
         <div class="slide bg-purple">
             <div class="snow"></div>
-            <h1 class="slide-title">Camera Lover</h1>
-            <p class="subtitle">Video circles recorded</p>
-
-            <!-- Duck Cool -->
-            <div class="sticker-container">
-                <lottie-player src="https://lottie.host/d1c3a6e9-0268-452f-a038-1637c3569865/H4a8b7X9z2.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            <div class="header-zone">
+                <h1 class="slide-title" data-key="title_4">Camera Lover</h1>
+                <p class="subtitle" data-key="sub_4">Video circles recorded</p>
             </div>
-
-            <h2 id="stat-video">0</h2>
-            <span class="unit">circles</span>
+            <div class="content-zone">
+                <lottie-player src="https://lottie.host/d1c3a6e9-0268-452f-a038-1637c3569865/H4a8b7X9z2.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                <div style="height: 20px;"></div>
+                <h2 id="stat-video">0</h2>
+                <span class="unit" data-key="unit_video">circles</span>
+            </div>
+            <div class="footer-zone">
+                <button class="btn btn-primary" onclick="nextSlide()" data-key="btn_next">Continue</button>
+                <button class="btn btn-secondary" onclick="prevSlide()" data-key="btn_back">Back</button>
+            </div>
         </div>
 
-        <!-- SLIDE 5: GHOST MODE (Red) -->
+        <!-- SLIDE 5: GHOST -->
         <div class="slide bg-red">
             <div class="snow"></div>
-            <h1 class="slide-title">Ghost Mode</h1>
-            <p class="subtitle">Opened app but silent</p>
-
-            <!-- Duck Hidden/Scared -->
-            <div class="sticker-container">
-                <lottie-player src="https://lottie.host/c57c4c7c-4034-4537-8f56-029487961928/9J2a8X5Z3p.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            <div class="header-zone">
+                <h1 class="slide-title" data-key="title_5">Ghost Mode</h1>
+                <p class="subtitle" data-key="sub_5">Opened app but silent</p>
             </div>
-
-            <h2 id="ghost-count">0</h2>
-            <span class="unit">times</span>
+            <div class="content-zone">
+                <lottie-player src="https://lottie.host/c57c4c7c-4034-4537-8f56-029487961928/9J2a8X5Z3p.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                <div style="height: 20px;"></div>
+                <h2 id="ghost-count">0</h2>
+                <span class="unit" data-key="unit_times">times</span>
+            </div>
+            <div class="footer-zone">
+                <button class="btn btn-primary" onclick="nextSlide()" data-key="btn_next">Continue</button>
+                <button class="btn btn-secondary" onclick="prevSlide()" data-key="btn_back">Back</button>
+            </div>
         </div>
 
-        <!-- SLIDE 6: STREAK (Yellow/Gold) -->
+        <!-- SLIDE 6: STREAK -->
         <div class="slide bg-yellow">
             <div class="snow"></div>
-            <h1 class="slide-title">Addicted?</h1>
-            <p class="subtitle">Longest daily streak</p>
-
-            <!-- Duck Fire -->
-            <div class="sticker-container">
-                <lottie-player src="https://lottie.host/f8b3c6a4-4927-4402-a7d1-056580665555/4K3a9Z7X2p.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            <div class="header-zone">
+                <h1 class="slide-title" data-key="title_6">Addicted?</h1>
+                <p class="subtitle" data-key="sub_6">Longest daily streak</p>
             </div>
-
-            <h2 id="days-streak">0</h2>
-            <span class="unit">days in a row</span>
-        </div>
-
-        <!-- CONTROLS -->
-        <div class="buttons-container">
-            <button class="btn btn-primary" onclick="nextSlide()">Continue</button>
-            <button class="btn btn-secondary" onclick="prevSlide()">Back</button>
+            <div class="content-zone">
+                <lottie-player src="https://lottie.host/f8b3c6a4-4927-4402-a7d1-056580665555/4K3a9Z7X2p.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                <div style="height: 20px;"></div>
+                <h2 id="days-streak">0</h2>
+                <span class="unit" data-key="unit_days_row">days in a row</span>
+            </div>
+            <div class="footer-zone">
+                <button class="btn btn-primary" onclick="Telegram.WebApp.close()" data-key="btn_close">Close App</button>
+                <button class="btn btn-secondary" onclick="prevSlide()" data-key="btn_back">Back</button>
+            </div>
         </div>
 
     </div>
