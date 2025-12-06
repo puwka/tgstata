@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://telegram.org; script-src 'self' 'unsafe-inline' https://telegram.org; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https:; font-src 'self' data:;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Year Review</title>
     <link rel="stylesheet" href="style.css">
@@ -10,76 +9,101 @@
 </head>
 <body>
 
-    <!-- Loading Screen -->
+    <!-- Loading -->
     <div id="loader-view" class="loader-view">
-        <div class="spinner"></div>
-        <p style="opacity: 0.7; font-size: 14px;">Analyzing your year...</p>
+        <div style="width: 40px; height: 40px; border: 4px solid #333; border-top-color: #fff; border-radius: 50%; animation: spin 1s infinite;"></div>
     </div>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 
-    <!-- Stories Container -->
-    <div id="story-container">
+    <div id="app" style="display: none;">
         
-        <!-- Navigation Taps -->
+        <!-- Navigation Zones (Hidden helper) -->
         <div class="tap-zone tap-left" onclick="prevSlide()"></div>
         <div class="tap-zone tap-right" onclick="nextSlide()"></div>
 
-        <!-- Progress Bar -->
-        <div class="progress-container" id="progress-container">
-            <!-- Injected by JS -->
+        <!-- SLIDE 1: JOIN DATE (Blue) -->
+        <div class="slide bg-blue active">
+            <div class="snow"></div>
+            
+            <h1 style="margin-top: 40px;">Rising Star!</h1>
+            <p class="subtitle">You joined Telegram</p>
+            
+            <!-- Utya Hi -->
+            <img src="https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/1.webp" class="sticker-img animate-zoom">
+            
+            <h2 id="days-on-tg">0</h2>
+            <span class="unit">days ago</span>
         </div>
 
-        <!-- SLIDE 1: INTRO -->
-        <div class="slide bg-purple active">
-            <div id="user-photo-container" style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; margin-bottom: 20px; border: 4px solid rgba(255,255,255,0.2); display: none;">
-                <img id="user-photo" src="" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <span class="emoji-icon animate-zoom" id="default-emoji">👋</span>
-            <h1 class="animate-up delay-1">Hello, <span id="user-name">User</span>!</h1>
-            <p class="subtitle animate-up delay-2">Your 2024 on Telegram was wild.</p>
-            <p class="animate-up delay-3" style="opacity: 0.5; font-size: 12px; margin-top: auto;">Tap right to continue -></p>
-        </div>
-
-        <!-- SLIDE 2: TOTAL MESSAGES -->
-        <div class="slide bg-blue">
-            <span class="emoji-icon animate-zoom">💬</span>
-            <p class="subtitle animate-up delay-1">You sent a total of</p>
-            <h2 class="animate-up delay-2" id="total-msgs">0</h2>
-            <p class="subtitle animate-up delay-3">messages this year.</p>
-            <div class="stat-box animate-up delay-3">
-                <div class="stat-row"><span>That's about</span> <b id="words-count">0</b> <span>words!</span></div>
-            </div>
-        </div>
-
-        <!-- SLIDE 3: CONTENT TYPE -->
+        <!-- SLIDE 2: TOTAL MESSAGES (Orange) -->
         <div class="slide bg-orange">
-            <span class="emoji-icon animate-zoom">📊</span>
-            <h1 class="animate-up delay-1">Communication Style</h1>
-            <div class="stat-box animate-up delay-2" style="text-align: left;">
-                <div class="stat-row"><span>📝 Text</span> <b id="stat-text">0</b></div>
-                <div class="stat-row"><span>📸 Photos</span> <b id="stat-photo">0</b></div>
-                <div class="stat-row"><span>🎙 Voice</span> <b id="stat-voice">0</b></div>
-                <div class="stat-row"><span>🤡 Stickers</span> <b id="stat-sticker">0</b></div>
-            </div>
-            <p class="animate-up delay-3" style="margin-top: 20px;">You are a <b id="persona-type">...</b></p>
+            <div class="snow"></div>
+            <h1 style="margin-top: 40px;">Chatterbox</h1>
+            <p class="subtitle">Total messages sent</p>
+
+            <!-- Utya Typing/Popcorn -->
+            <img src="https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/11.webp" class="sticker-img animate-zoom">
+
+            <h2 id="total-msgs">0</h2>
+            <span class="unit">messages</span>
         </div>
 
-        <!-- SLIDE 4: TOP FRIENDS -->
-        <div class="slide bg-green">
-            <span class="emoji-icon animate-zoom">🏆</span>
-            <h1 class="animate-up delay-1">Top Chat</h1>
-            <div class="stat-box animate-up delay-2">
-                <h2 style="font-size: 30px; margin: 10px 0;" id="top-contact-name">...</h2>
-                <p style="opacity: 0.7;" id="top-contact-count">0 messages</p>
-            </div>
-            <p class="subtitle animate-up delay-3">Besties forever?</p>
+        <!-- SLIDE 3: VOICE (Gray/Silver) -->
+        <div class="slide bg-gray">
+            <div class="snow"></div>
+            <h1 style="margin-top: 40px;">Voice Master</h1>
+            <p class="subtitle">You prefer to be heard</p>
+
+            <!-- Utya Headphones/Mic -->
+            <img src="https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/19.webp" class="sticker-img animate-zoom">
+
+            <h2 id="stat-voice">0</h2>
+            <span class="unit">voice messages</span>
         </div>
 
-        <!-- SLIDE 5: OUTRO -->
-        <div class="slide bg-dark">
-            <span class="emoji-icon animate-zoom">✨</span>
-            <h1 class="animate-up delay-1">That's a Wrap!</h1>
-            <p class="subtitle animate-up delay-2">See you in 2026.</p>
-            <button class="animate-up delay-3" style="background: white; color: black; border: none; padding: 15px 30px; border-radius: 30px; font-weight: bold; font-size: 16px; margin-top: 30px;" onclick="Telegram.WebApp.close()">Close App</button>
+        <!-- SLIDE 4: VIDEO NOTES (Blue/Cyan) -->
+        <div class="slide bg-blue">
+            <div class="snow"></div>
+            <h1 style="margin-top: 40px;">Camera Lover</h1>
+            <p class="subtitle">Video circles recorded</p>
+
+            <!-- Utya Cool -->
+            <img src="https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/7.webp" class="sticker-img animate-zoom">
+
+            <h2 id="stat-video">0</h2>
+            <span class="unit">circles</span>
+        </div>
+
+        <!-- SLIDE 5: GHOST MODE (Red) -->
+        <div class="slide bg-red">
+            <div class="snow"></div>
+            <h1 style="margin-top: 40px;">Ghost Mode</h1>
+            <p class="subtitle">Opened app but didn't write</p>
+
+            <!-- Utya Scared/Hidden -->
+            <img src="https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/23.webp" class="sticker-img animate-zoom">
+
+            <h2 id="ghost-count">0</h2>
+            <span class="unit">times</span>
+        </div>
+
+        <!-- SLIDE 6: STREAK (Purple) -->
+        <div class="slide bg-purple">
+            <div class="snow"></div>
+            <h1 style="margin-top: 40px;">Addicted?</h1>
+            <p class="subtitle">Longest daily streak</p>
+
+            <!-- Utya Fire/Love -->
+            <img src="https://tlgrm.eu/_/stickers/8a1/9aa/8a19aab4-98c0-37cb-a3d4-491cb94d7e12/10.webp" class="sticker-img animate-zoom">
+
+            <h2 id="days-streak">0</h2>
+            <span class="unit">days in a row</span>
+        </div>
+
+        <!-- CONTROLS -->
+        <div class="buttons-container">
+            <button class="btn btn-primary" onclick="nextSlide()">Continue</button>
+            <button class="btn btn-secondary" onclick="prevSlide()">Back</button>
         </div>
 
     </div>

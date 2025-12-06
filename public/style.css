@@ -1,6 +1,7 @@
 :root {
     --safe-area-top: env(safe-area-inset-top, 20px);
     --safe-area-bottom: env(safe-area-inset-bottom, 20px);
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -8,151 +9,112 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    font-family: var(--font-family);
     background: #000;
     color: #fff;
-    overflow: hidden; /* No scroll for stories */
+    overflow: hidden;
     height: 100vh;
     touch-action: manipulation;
 }
 
-/* --- STORY CONTAINER --- */
-#story-container {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    display: none; /* Hidden until loaded */
-}
-
-/* --- PROGRESS BAR --- */
-.progress-container {
+/* --- SNOW ANIMATION --- */
+.snow {
     position: absolute;
-    top: calc(var(--safe-area-top) + 10px);
-    left: 0;
-    width: 100%;
-    padding: 0 10px;
-    display: flex;
-    gap: 4px;
-    z-index: 100;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    background-image: 
+        radial-gradient(4px 4px at 100px 50px, #fff, transparent), 
+        radial-gradient(6px 6px at 200px 150px, #fff, transparent), 
+        radial-gradient(3px 3px at 300px 250px, #fff, transparent);
+    background-size: 200px 200px;
+    animation: snow 3s linear infinite;
+    opacity: 0.3;
+}
+@keyframes snow {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(200px); }
 }
 
-.progress-segment {
-    flex: 1;
-    height: 3px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    background: #fff;
-    width: 0%;
-    transition: width 0s linear;
-}
-
-.progress-fill.active {
-    width: 100%;
-    transition: width 5s linear; /* Default slide duration */
-}
-
-.progress-fill.completed {
-    width: 100%;
-}
-
-/* --- SLIDES --- */
+/* --- SLIDE LAYOUT --- */
 .slide {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    width: 100%; height: 100%;
+    position: absolute; top: 0; left: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
     text-align: center;
-    padding: 40px;
+    padding: 20px;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.4s ease;
+    z-index: 5;
 }
+.slide.active { opacity: 1; pointer-events: auto; z-index: 10; }
 
-.slide.active {
-    opacity: 1;
-    pointer-events: auto;
-    z-index: 10;
-}
-
-/* --- SLIDE THEMES (Gradients) --- */
-.bg-purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.bg-orange { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-.bg-blue   { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-.bg-green  { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-.bg-dark   { background: linear-gradient(135deg, #09203f 0%, #537895 100%); }
-
-/* --- ANIMATIONS --- */
-@keyframes slideUp {
-    from { transform: translateY(50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes zoomIn {
-    from { transform: scale(0.8); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
-.animate-up { animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-.animate-zoom { animation: zoomIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-
-.delay-1 { animation-delay: 0.1s; opacity: 0; }
-.delay-2 { animation-delay: 0.3s; opacity: 0; }
-.delay-3 { animation-delay: 0.5s; opacity: 0; }
+/* --- COLORS (Solid/Gradient) --- */
+.bg-blue   { background: #3390ec; }
+.bg-green  { background: #34b744; }
+.bg-orange { background: #e68d37; }
+.bg-red    { background: #ef4949; }
+.bg-purple { background: #8e5af7; }
+.bg-gray   { background: #8e8e93; }
 
 /* --- TYPOGRAPHY --- */
-h1 { font-size: 32px; font-weight: 800; margin-bottom: 10px; line-height: 1.1; }
-h2 { font-size: 60px; font-weight: 900; margin: 20px 0; letter-spacing: -1px; }
-.subtitle { font-size: 18px; opacity: 0.8; margin-bottom: 30px; }
-.emoji-icon { font-size: 80px; margin-bottom: 20px; display: block; }
-.stat-box {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    border-radius: 20px;
-    width: 100%;
-    margin: 10px 0;
-}
-.stat-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px;}
+h1 { font-size: 28px; font-weight: 800; margin: 0 0 10px 0; }
+h2 { font-size: 72px; font-weight: 900; margin: 10px 0; letter-spacing: -2px; line-height: 1; }
+.subtitle { font-size: 16px; opacity: 0.9; margin-bottom: 30px; font-weight: 500; }
+.unit { font-size: 20px; font-weight: 700; opacity: 0.9; display: block; margin-top: -10px;}
 
-/* --- NAVIGATION ZONES --- */
-.tap-zone {
+/* --- STICKERS --- */
+.sticker-img {
+    width: 180px; height: 180px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+}
+
+/* --- BUTTONS (Bottom) --- */
+.buttons-container {
     position: absolute;
-    top: 0;
-    height: 100%;
-    width: 30%;
-    z-index: 50;
+    bottom: calc(var(--safe-area-bottom) + 30px);
+    width: 100%;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 20;
+}
+
+.btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+.btn:active { transform: scale(0.98); }
+
+.btn-primary { background: #fff; color: #000; }
+.btn-secondary { background: rgba(255,255,255,0.2); color: #fff; backdrop-filter: blur(10px); }
+
+/* --- NAVIGATION --- */
+/* We keep tap zones for convenience, but rely on buttons visually */
+.tap-zone {
+    position: absolute; top: 0;
+    height: 70%; /* Leave bottom for buttons */
+    width: 50%; z-index: 15;
 }
 .tap-left { left: 0; }
-.tap-right { right: 0; width: 70%; } /* Right side is larger for easier 'next' */
+.tap-right { right: 0; }
 
 /* --- LOADER --- */
 .loader-view {
-    position: fixed;
-    top: 0; left: 0;
+    position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
     background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+    display: flex; justify-content: center; align-items: center;
     z-index: 999;
 }
-.spinner {
-    width: 40px; height: 40px;
-    border: 4px solid rgba(255,255,255,0.1);
-    border-left-color: #fff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 20px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
