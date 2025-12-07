@@ -15,11 +15,11 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 const app = express();
 app.use(cors());
 
-// CSP: Allow LottieFiles, Telegram CDN, and unsafe-eval/blob for Lottie player workarounds
+// CSP: Allow LottieFiles (CDN assets), Telegram CDN
 app.use((req, res, next) => {
     res.setHeader(
         'Content-Security-Policy',
-        "default-src 'self' https://telegram.org https://api.telegram.org; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://telegram.org; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src 'self' https: blob:; font-src 'self' data:; frame-src 'self' https://lottie.host;"
+        "default-src 'self' https://telegram.org https://api.telegram.org; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://telegram.org; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src 'self' https: blob:; font-src 'self' data:; frame-src 'self' https://lottie.host https://assets.lottiefiles.com;"
     );
     next();
 });

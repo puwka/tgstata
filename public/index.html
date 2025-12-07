@@ -3,110 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wrapped 2024</title>
+    <title>Year Review</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body>
 
-    <!-- Loader -->
-    <div id="loader" class="loader"><div class="spinner"></div></div>
-
-    <!-- Background -->
-    <div class="mesh-bg"></div>
-
-    <!-- Progress -->
-    <div id="progress-bar" class="progress-container"></div>
-
-    <!-- Taps -->
-    <div class="tap-zone tap-left" onclick="prevSlide()"></div>
-    <div class="tap-zone tap-right" onclick="nextSlide()"></div>
+    <div id="loader" class="loader">
+        <div class="spinner"></div>
+    </div>
 
     <!-- App Container -->
-    <div id="app">
+    <div id="app" style="display: none;">
+        
+        <!-- Controls -->
+        <div class="tap-zone tap-left" onclick="prevSlide()"></div>
+        <div class="tap-zone tap-right" onclick="nextSlide()"></div>
+        <div id="progress-bar" class="progress-container"></div>
 
-        <!-- SLIDE 1: INTRO -->
-        <div class="glass-card active">
-            <div class="card-header">
-                <div class="card-title" data-key="title_1">Welcome</div>
-                <div class="card-sub" data-key="sub_1">Your Telegram Year Wrapped</div>
+        <!-- SLIDE 1: INTRO (Blue) -->
+        <div class="slide bg-blue active">
+            <div class="snow"></div>
+            
+            <div class="glass-panel animate-up">
+                <div class="header-zone">
+                    <h1 class="slide-title" data-key="title_1">Rising Star!</h1>
+                    <p class="subtitle" data-key="sub_1">You joined Telegram</p>
+                </div>
+                
+                <div class="sticker-zone">
+                    <!-- Waving Duck -->
+                    <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_S6vWEd.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                </div>
+                
+                <div class="stat-zone">
+                    <h2 id="days-on-tg">0</h2>
+                    <span class="unit" data-key="unit_days">days ago</span>
+                </div>
             </div>
-            <div class="visual-box">👋</div>
-            <div style="text-align:center;">
-                <div class="stat-val" style="font-size: 40px;" id="user-name">User</div>
-                <div class="stat-unit" data-key="unit_ready">Is ready</div>
+
+            <!-- Photo Badge (Floating) -->
+            <div id="user-photo-container" class="photo-badge">
+                <img id="user-photo" src="">
             </div>
-            <div class="card-sub" style="margin-top:20px; font-size:12px;">Tap right to start -></div>
+
+            <div class="footer-zone">
+                <button class="btn btn-glass" onclick="nextSlide()" data-key="btn_next">Continue</button>
+            </div>
         </div>
 
-        <!-- SLIDE 2: DAYS -->
-        <div class="glass-card">
-            <div class="card-header">
-                <div class="card-title" data-key="title_2">Legacy</div>
-                <div class="card-sub" data-key="sub_2">You've been here for</div>
+        <!-- SLIDE 2: MESSAGES (Orange) -->
+        <div class="slide bg-orange">
+            <div class="snow"></div>
+            <div class="glass-panel animate-up">
+                <div class="header-zone">
+                    <h1 class="slide-title" data-key="title_2">Chatterbox</h1>
+                    <p class="subtitle" data-key="sub_2">Total messages sent</p>
+                </div>
+                <div class="sticker-zone">
+                    <!-- Typing Duck -->
+                    <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_swo15u.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                </div>
+                <div class="stat-zone">
+                    <h2 id="total-msgs">0</h2>
+                    <span class="unit" data-key="unit_msgs">messages</span>
+                </div>
             </div>
-            <div class="visual-box">🗓️</div>
-            <div style="text-align:center;">
-                <div class="stat-val" id="days-on-tg">0</div>
-                <div class="stat-unit" data-key="unit_days">Days</div>
+            <div class="footer-zone">
+                <button class="btn btn-glass" onclick="nextSlide()" data-key="btn_next">Continue</button>
+                <button class="btn btn-text" onclick="prevSlide()" data-key="btn_back">Back</button>
             </div>
-            <div class="card-sub">Since <span id="join-year">2024</span></div>
         </div>
 
-        <!-- SLIDE 3: MESSAGES -->
-        <div class="glass-card">
-            <div class="card-header">
-                <div class="card-title" data-key="title_3">Volume</div>
-                <div class="card-sub" data-key="sub_3">Total messages sent</div>
+        <!-- SLIDE 3: VOICE (Green) -->
+        <div class="slide bg-green">
+            <div class="snow"></div>
+            <div class="glass-panel animate-up">
+                <div class="header-zone">
+                    <h1 class="slide-title" data-key="title_3">Voice Master</h1>
+                    <p class="subtitle" data-key="sub_3">You prefer to be heard</p>
+                </div>
+                <div class="sticker-zone">
+                    <!-- Music/Headphones -->
+                    <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_w51pcehl.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                </div>
+                <div class="stat-zone">
+                    <h2 id="stat-voice">0</h2>
+                    <span class="unit" data-key="unit_voice">voice messages</span>
+                </div>
             </div>
-            <div class="visual-box">💬</div>
-            <div style="text-align:center;">
-                <div class="stat-val" id="total-msgs">0</div>
-                <div class="stat-unit" data-key="unit_msgs">Messages</div>
+            <div class="footer-zone">
+                <button class="btn btn-glass" onclick="nextSlide()" data-key="btn_next">Continue</button>
+                <button class="btn btn-text" onclick="prevSlide()" data-key="btn_back">Back</button>
             </div>
-            <div class="card-sub">That's a lot of typing!</div>
         </div>
 
-        <!-- SLIDE 4: VOICE -->
-        <div class="glass-card">
-            <div class="card-header">
-                <div class="card-title" data-key="title_4">Audio</div>
-                <div class="card-sub" data-key="sub_4">Hours of talking</div>
+        <!-- SLIDE 4: VIDEO (Purple) -->
+        <div class="slide bg-purple">
+            <div class="snow"></div>
+            <div class="glass-panel animate-up">
+                <div class="header-zone">
+                    <h1 class="slide-title" data-key="title_4">Camera Lover</h1>
+                    <p class="subtitle" data-key="sub_4">Video circles recorded</p>
+                </div>
+                <div class="sticker-zone">
+                    <!-- Camera -->
+                    <lottie-player src="https://assets3.lottiefiles.com/packages/lf20_k9w8ar8k.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                </div>
+                <div class="stat-zone">
+                    <h2 id="stat-video">0</h2>
+                    <span class="unit" data-key="unit_video">circles</span>
+                </div>
             </div>
-            <div class="visual-box">🎙️</div>
-            <div style="text-align:center;">
-                <div class="stat-val" id="stat-voice">0</div>
-                <div class="stat-unit" data-key="unit_voice">Voice Notes</div>
+            <div class="footer-zone">
+                <button class="btn btn-glass" onclick="nextSlide()" data-key="btn_next">Continue</button>
+                <button class="btn btn-text" onclick="prevSlide()" data-key="btn_back">Back</button>
             </div>
-            <div class="card-sub">Mic drop?</div>
         </div>
 
-        <!-- SLIDE 5: GHOST -->
-        <div class="glass-card">
-            <div class="card-header">
-                <div class="card-title" data-key="title_5">Lurker</div>
-                <div class="card-sub" data-key="sub_5">Opened but ignored</div>
+        <!-- SLIDE 5: GHOST (Red) -->
+        <div class="slide bg-red">
+            <div class="snow"></div>
+            <div class="glass-panel animate-up">
+                <div class="header-zone">
+                    <h1 class="slide-title" data-key="title_5">Ghost Mode</h1>
+                    <p class="subtitle" data-key="sub_5">Opened app but silent</p>
+                </div>
+                <div class="sticker-zone">
+                    <!-- Ghost -->
+                    <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_q4m6z2.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                </div>
+                <div class="stat-zone">
+                    <h2 id="ghost-count">0</h2>
+                    <span class="unit" data-key="unit_times">times</span>
+                </div>
             </div>
-            <div class="visual-box">👻</div>
-            <div style="text-align:center;">
-                <div class="stat-val" id="ghost-count">0</div>
-                <div class="stat-unit" data-key="unit_times">Times</div>
+            <div class="footer-zone">
+                <button class="btn btn-glass" onclick="nextSlide()" data-key="btn_next">Continue</button>
+                <button class="btn btn-text" onclick="prevSlide()" data-key="btn_back">Back</button>
             </div>
-            <div class="card-sub">Ninja mode on</div>
         </div>
 
-        <!-- SLIDE 6: STREAK -->
-        <div class="glass-card">
-            <div class="card-header">
-                <div class="card-title" data-key="title_6">Streak</div>
-                <div class="card-sub" data-key="sub_6">Days in a row</div>
+        <!-- SLIDE 6: STREAK (Gold) -->
+        <div class="slide bg-yellow">
+            <div class="snow"></div>
+            <div class="glass-panel animate-up">
+                <div class="header-zone">
+                    <h1 class="slide-title" data-key="title_6">Addicted?</h1>
+                    <p class="subtitle" data-key="sub_6">Longest daily streak</p>
+                </div>
+                <div class="sticker-zone">
+                    <!-- Fire -->
+                    <lottie-player src="https://assets8.lottiefiles.com/packages/lf20_96bovdur.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                </div>
+                <div class="stat-zone">
+                    <h2 id="days-streak">0</h2>
+                    <span class="unit" data-key="unit_days_row">days in a row</span>
+                </div>
             </div>
-            <div class="visual-box">🔥</div>
-            <div style="text-align:center;">
-                <div class="stat-val" id="days-streak">0</div>
-                <div class="stat-unit" data-key="unit_days_row">Day Streak</div>
+            <div class="footer-zone">
+                <button class="btn btn-glass" onclick="Telegram.WebApp.close()" data-key="btn_close">Close App</button>
+                <button class="btn btn-text" onclick="prevSlide()" data-key="btn_back">Back</button>
             </div>
-            <div class="card-sub" style="margin-top:20px; font-size:12px;">Tap to close</div>
         </div>
 
     </div>
