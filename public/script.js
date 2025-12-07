@@ -1,129 +1,158 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
 tg.ready();
-tg.setHeaderColor('#0f0f13');
-tg.setBackgroundColor('#0f0f13');
+
+// Force colors
+tg.setHeaderColor('#000000');
+tg.setBackgroundColor('#000000');
 
 const API_URL = '/api';
 
-/* --- STATE --- */
-let currentSlide = 0;
-const slides = document.querySelectorAll('.glass-card');
-const total = slides.length;
-
 /* --- LOCALIZATION --- */
-const i18n = {
+const translations = {
+    en: {
+        title_1: "Rising Star!", sub_1: "You joined Telegram", unit_days: "days ago",
+        title_2: "Chatterbox", sub_2: "Total messages sent", unit_msgs: "messages",
+        title_3: "Voice Master", sub_3: "You prefer to be heard", unit_voice: "voice messages",
+        title_4: "Camera Lover", sub_4: "Video circles recorded", unit_video: "circles",
+        title_5: "Ghost Mode", sub_5: "Opened app but silent", unit_times: "times",
+        title_6: "Addicted?", sub_6: "Longest daily streak", unit_days_row: "days in a row",
+        btn_next: "Continue", btn_back: "Back", btn_close: "Close App"
+    },
     ru: {
-        title_1: "Итоги 2024", sub_1: "Твой год в Telegram", unit_ready: "Готов узнать?",
-        title_2: "Легенда", sub_2: "Ты с нами уже", unit_days: "Дней",
-        title_3: "Общение", sub_3: "Отправлено сообщений", unit_msgs: "Сообщений",
-        title_4: "Голос", sub_4: "Любишь поговорить", unit_voice: "Голосовых",
-        title_5: "Призрак", sub_5: "Заходил, но молчал", unit_times: "Раз",
-        title_6: "Серия", sub_6: "Заходил подряд", unit_days_row: "Дней",
+        title_1: "Восходящая звезда!", sub_1: "Ты в Telegram уже", unit_days: "дней",
+        title_2: "Болтун года", sub_2: "Всего отправлено сообщений", unit_msgs: "сообщений",
+        title_3: "Голос улиц", sub_3: "Тебя точно было слышно", unit_voice: "голосовых",
+        title_4: "Камера тебя любит", sub_4: "Записано видео-кружков", unit_video: "кружков",
+        title_5: "Режим призрака", sub_5: "Заходил, но молчал", unit_times: "раз",
+        title_6: "Зависимость?", sub_6: "Самый долгий стрик", unit_days_row: "дней подряд",
+        btn_next: "Продолжить", btn_back: "Назад", btn_close: "Закрыть"
     }
 };
 
+/* --- STATE --- */
+let currentSlide = 0;
+
 /* --- INIT --- */
 async function init() {
-    createProgress();
-    
-    // Apply Lang
-    if (tg.initDataUnsafe?.user?.language_code === 'ru') {
-        applyLang(i18n.ru);
-    }
+    // 1. Apply Lang immediately
+    applyLocalization();
 
+    // 2. Fetch Data
     try {
         const headers = { 'Content-Type': 'application/json' };
         if (tg.initData) headers['X-Telegram-Init-Data'] = tg.initData;
 
-        const res = await fetch(`${API_URL}/stats`, { headers });
+        // Timeout fetch to avoid hanging forever
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 sec max
+
+        const res = await fetch(`${API_URL}/stats`, { 
+            headers, 
+            signal: controller.signal 
+        });
+        clearTimeout(timeoutId);
+
         const data = await res.json();
-        
-        populate(data);
-        document.getElementById('loader').style.display = 'none';
+        populateData(data);
 
     } catch (e) {
-        console.error(e);
-        document.getElementById('loader').style.display = 'none'; // Allow showing static UI at least
+        console.error("Fetch failed:", e);
+        // If fail, we still show UI with zeros, don't block user
+        tg.showAlert("Data loading failed, showing demo.");
+    } finally {
+        // ALWAYS hide loader
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        updateSlideState();
     }
 }
 
-function applyLang(dict) {
-    document.querySelectorAll('[data-key]').forEach(el => {
-        const k = el.getAttribute('data-key');
-        if (dict[k]) el.innerText = dict[k];
+// SAFETY NET: Hide loader after 5s anyway if JS hangs
+setTimeout(() => {
+    const loader = document.getElementById('loader');
+    const app = document.getElementById('app');
+    if (loader && loader.style.display !== 'none') {
+        console.warn("Force hiding loader");
+        loader.style.display = 'none';
+        app.style.display = 'block';
+        updateSlideState();
+    }
+}, 5000);
+
+function applyLocalization() {
+    try {
+        const lang = (tg.initDataUnsafe?.user?.language_code === 'ru') ? 'ru' : 'en';
+        const texts = translations[lang];
+        if (!texts) return;
+        
+        document.querySelectorAll('[data-key]').forEach(el => {
+            const key = el.getAttribute('data-key');
+            if (texts[key]) el.textContent = texts[key];
+        });
+    } catch(e) { console.warn(e); }
+}
+
+function updateSlideState() {
+    const allSlides = document.querySelectorAll('.slide');
+    allSlides.forEach((s, i) => {
+        if (i === currentSlide) s.classList.add('active');
+        else s.classList.remove('active');
     });
 }
 
-function createProgress() {
-    const box = document.getElementById('progress-bar');
-    box.innerHTML = '';
-    for(let i=0; i<total; i++) {
-        box.innerHTML += `<div class="prog-seg"><div class="prog-fill" id="p-${i}"></div></div>`;
+function populateData(stats) {
+    if (!stats) return;
+
+    const animateValue = (id, start, end, duration) => {
+        const obj = document.getElementById(id);
+        if (!obj) return;
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            // Ease Out Quart
+            const ease = 1 - Math.pow(1 - progress, 4);
+            obj.innerHTML = Math.floor(ease * (end - start) + start).toLocaleString();
+            if (progress < 1) window.requestAnimationFrame(step);
+        };
+        window.requestAnimationFrame(step);
+    };
+
+    animateValue("days-on-tg", 0, stats.daysOnTg || 100, 2000);
+    animateValue("total-msgs", 0, stats.totalMessages || 500, 2000);
+    animateValue("stat-voice", 0, stats.voices || 0, 2000);
+    animateValue("stat-video", 0, stats.videoNotes || 0, 2000);
+    animateValue("ghost-count", 0, stats.ghostModeCount || 10, 2000);
+    animateValue("days-streak", 0, stats.daysStreak || 1, 2000);
+
+    // Photo
+    if (stats.photoUrl) {
+        const img = document.getElementById('user-photo');
+        const cont = document.getElementById('user-photo-container');
+        if(img && cont) {
+            img.src = stats.photoUrl;
+            cont.style.display = 'block';
+        }
     }
-    updateProgress();
 }
 
-function updateProgress() {
-    for(let i=0; i<total; i++) {
-        const el = document.getElementById(`p-${i}`);
-        if(i < currentSlide) el.className = 'prog-fill done';
-        else if(i === currentSlide) el.className = 'prog-fill done'; // Fill current immediately
-        else el.className = 'prog-fill';
-    }
-}
-
-function populate(stats) {
-    const user = tg.initDataUnsafe?.user;
-    if (user?.first_name) document.getElementById('user-name').innerText = user.first_name;
-
-    animateVal("days-on-tg", stats.daysOnTg || 100);
-    animateVal("total-msgs", stats.totalMessages || 500);
-    animateVal("stat-voice", stats.voices || 0);
-    animateVal("ghost-count", stats.ghostModeCount || 20);
-    animateVal("days-streak", stats.daysStreak || 5);
-    
-    // Calculate year
-    const joinYear = new Date().getFullYear() - Math.floor((stats.daysOnTg||0)/365);
-    document.getElementById('join-year').innerText = joinYear > 2013 ? joinYear : 2013;
-}
-
-function animateVal(id, end) {
-    const el = document.getElementById(id);
-    if(!el) return;
-    let start = 0;
-    const dur = 1500;
-    let startTime = null;
-    
-    const step = (ts) => {
-        if(!startTime) startTime = ts;
-        const prog = Math.min((ts - startTime)/dur, 1);
-        const ease = 1 - Math.pow(1 - prog, 3); // Cubic ease out
-        el.innerText = Math.floor(ease * end).toLocaleString();
-        if(prog < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-}
-
-/* --- NAV --- */
 window.nextSlide = function() {
-    if(currentSlide < total - 1) {
-        slides[currentSlide].classList.remove('active');
+    const allSlides = document.querySelectorAll('.slide');
+    if (currentSlide < allSlides.length - 1) {
         currentSlide++;
-        slides[currentSlide].classList.add('active');
-        updateProgress();
+        updateSlideState();
     } else {
         tg.close();
     }
-}
+};
 
 window.prevSlide = function() {
-    if(currentSlide > 0) {
-        slides[currentSlide].classList.remove('active');
+    if (currentSlide > 0) {
         currentSlide--;
-        slides[currentSlide].classList.add('active');
-        updateProgress();
+        updateSlideState();
     }
-}
+};
 
+// Start
 init();
