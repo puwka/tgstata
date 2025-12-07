@@ -14,62 +14,51 @@
         <div class="spinner"></div>
     </div>
 
-    <!-- Background Elements -->
-    <div class="mesh-bg"></div>
-    <div class="snow"></div>
-
-    <!-- App Container -->
     <div id="app" style="display: none;">
         
-        <!-- Progress -->
         <div id="progress-bar" class="progress-container"></div>
-
-        <!-- Controls -->
         <div class="tap-zone tap-left" onclick="prevSlide()"></div>
         <div class="tap-zone tap-right" onclick="nextSlide()"></div>
 
-        <!-- SLIDE 1: INTRO -->
-        <div class="slide active">
-            <div class="content-wrapper">
-                <div class="header-zone">
-                    <h1 class="slide-title" data-key="title_1">Rising Star!</h1>
-                    <p class="subtitle" data-key="sub_1">You joined Telegram</p>
+        <!-- SLIDE 1: INTRO (Blue) -->
+        <div class="slide bg-blue active">
+            <div class="snow"></div>
+            
+            <div class="header-zone">
+                <h1 class="slide-title" data-key="title_1">Rising Star!</h1>
+                <p class="subtitle" data-key="sub_1">You joined Telegram</p>
+            </div>
+            
+            <div class="content-zone">
+                <div class="sticker-container">
+                    <lottie-player src="stickers/intro.json" background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
-                
-                <div class="sticker-zone">
-                    <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_S6vWEd.json" background="transparent" speed="1" loop autoplay></lottie-player>
-                </div>
-                
-                <div class="stat-zone">
-                    <h2 id="days-on-tg">0</h2>
-                    <span class="unit" data-key="unit_days">days ago</span>
-                </div>
+                <h2 id="days-on-tg">0</h2>
+                <span class="unit" data-key="unit_days">days ago</span>
             </div>
 
-            <!-- Floating Badge -->
+            <div class="footer-zone">
+                <button class="btn btn-primary" onclick="nextSlide()" data-key="btn_next">Continue</button>
+            </div>
+            
             <div id="user-photo-container" class="photo-badge">
                 <img id="user-photo" src="">
             </div>
-
-            <div class="footer-zone">
-                <button class="btn btn-primary" onclick="nextSlide()" data-key="btn_next">Continue</button>
-            </div>
         </div>
 
-        <!-- SLIDE 2: MESSAGES -->
-        <div class="slide">
-            <div class="content-wrapper">
-                <div class="header-zone">
-                    <h1 class="slide-title" data-key="title_2">Chatterbox</h1>
-                    <p class="subtitle" data-key="sub_2">Total messages sent</p>
-                </div>
-                <div class="sticker-zone">
+        <!-- SLIDE 2: MESSAGES (Orange) -->
+        <div class="slide bg-orange">
+            <div class="snow"></div>
+            <div class="header-zone">
+                <h1 class="slide-title" data-key="title_2">Chatterbox</h1>
+                <p class="subtitle" data-key="sub_2">Total messages sent</p>
+            </div>
+            <div class="content-zone">
+                <div class="sticker-container">
                     <lottie-player src="stickers/messages.json" background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
-                <div class="stat-zone">
-                    <h2 id="total-msgs">0</h2>
-                    <span class="unit" data-key="unit_msgs">messages</span>
-                </div>
+                <h2 id="total-msgs">0</h2>
+                <span class="unit" data-key="unit_msgs">messages</span>
             </div>
             <div class="footer-zone">
                 <button class="btn btn-primary" onclick="nextSlide()" data-key="btn_next">Continue</button>
@@ -77,20 +66,19 @@
             </div>
         </div>
 
-        <!-- SLIDE 3: VOICE -->
-        <div class="slide">
-            <div class="content-wrapper">
-                <div class="header-zone">
-                    <h1 class="slide-title" data-key="title_3">Voice Master</h1>
-                    <p class="subtitle" data-key="sub_3">You prefer to be heard</p>
-                </div>
-                <div class="sticker-zone">
+        <!-- SLIDE 3: VOICE (Green) -->
+        <div class="slide bg-green">
+            <div class="snow"></div>
+            <div class="header-zone">
+                <h1 class="slide-title" data-key="title_3">Voice Master</h1>
+                <p class="subtitle" data-key="sub_3">You prefer to be heard</p>
+            </div>
+            <div class="content-zone">
+                <div class="sticker-container">
                     <lottie-player src="stickers/voice.json" background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
-                <div class="stat-zone">
-                    <h2 id="stat-voice">0</h2>
-                    <span class="unit" data-key="unit_voice">voice messages</span>
-                </div>
+                <h2 id="stat-voice">0</h2>
+                <span class="unit" data-key="unit_voice">voice messages</span>
             </div>
             <div class="footer-zone">
                 <button class="btn btn-primary" onclick="nextSlide()" data-key="btn_next">Continue</button>
@@ -98,20 +86,19 @@
             </div>
         </div>
 
-        <!-- SLIDE 4: VIDEO -->
-        <div class="slide">
-            <div class="content-wrapper">
-                <div class="header-zone">
-                    <h1 class="slide-title" data-key="title_4">Camera Lover</h1>
-                    <p class="subtitle" data-key="sub_4">Video circles recorded</p>
-                </div>
-                <div class="sticker-zone">
+        <!-- SLIDE 4: VIDEO (Purple) -->
+        <div class="slide bg-purple">
+            <div class="snow"></div>
+            <div class="header-zone">
+                <h1 class="slide-title" data-key="title_4">Camera Lover</h1>
+                <p class="subtitle" data-key="sub_4">Video circles recorded</p>
+            </div>
+            <div class="content-zone">
+                <div class="sticker-container">
                     <lottie-player src="stickers/video.json" background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
-                <div class="stat-zone">
-                    <h2 id="stat-video">0</h2>
-                    <span class="unit" data-key="unit_video">circles</span>
-                </div>
+                <h2 id="stat-video">0</h2>
+                <span class="unit" data-key="unit_video">circles</span>
             </div>
             <div class="footer-zone">
                 <button class="btn btn-primary" onclick="nextSlide()" data-key="btn_next">Continue</button>
@@ -119,20 +106,19 @@
             </div>
         </div>
 
-        <!-- SLIDE 5: GHOST -->
-        <div class="slide">
-            <div class="content-wrapper">
-                <div class="header-zone">
-                    <h1 class="slide-title" data-key="title_5">Ghost Mode</h1>
-                    <p class="subtitle" data-key="sub_5">Opened app but silent</p>
-                </div>
-                <div class="sticker-zone">
+        <!-- SLIDE 5: GHOST (Red) -->
+        <div class="slide bg-red">
+            <div class="snow"></div>
+            <div class="header-zone">
+                <h1 class="slide-title" data-key="title_5">Ghost Mode</h1>
+                <p class="subtitle" data-key="sub_5">Opened app but silent</p>
+            </div>
+            <div class="content-zone">
+                <div class="sticker-container">
                     <lottie-player src="stickers/ghost.json" background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
-                <div class="stat-zone">
-                    <h2 id="ghost-count">0</h2>
-                    <span class="unit" data-key="unit_times">times</span>
-                </div>
+                <h2 id="ghost-count">0</h2>
+                <span class="unit" data-key="unit_times">times</span>
             </div>
             <div class="footer-zone">
                 <button class="btn btn-primary" onclick="nextSlide()" data-key="btn_next">Continue</button>
@@ -140,20 +126,19 @@
             </div>
         </div>
 
-        <!-- SLIDE 6: STREAK -->
-        <div class="slide">
-            <div class="content-wrapper">
-                <div class="header-zone">
-                    <h1 class="slide-title" data-key="title_6">Addicted?</h1>
-                    <p class="subtitle" data-key="sub_6">Longest daily streak</p>
-                </div>
-                <div class="sticker-zone">
+        <!-- SLIDE 6: STREAK (Yellow) -->
+        <div class="slide bg-yellow">
+            <div class="snow"></div>
+            <div class="header-zone">
+                <h1 class="slide-title" data-key="title_6">Addicted?</h1>
+                <p class="subtitle" data-key="sub_6">Longest daily streak</p>
+            </div>
+            <div class="content-zone">
+                <div class="sticker-container">
                     <lottie-player src="stickers/streak.json" background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
-                <div class="stat-zone">
-                    <h2 id="days-streak">0</h2>
-                    <span class="unit" data-key="unit_days_row">days in a row</span>
-                </div>
+                <h2 id="days-streak">0</h2>
+                <span class="unit" data-key="unit_days_row">days in a row</span>
             </div>
             <div class="footer-zone">
                 <button class="btn btn-primary" onclick="Telegram.WebApp.close()" data-key="btn_close">Close App</button>
